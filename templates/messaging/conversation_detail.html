@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+
+{% block title %}Conversation - Farm Market{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center">
+                        {% if user.user_type == 'customer' %}
+                            {% if conversation.farmer.user.profile_picture %}
+                                <img src="{{ conversation.farmer.user.profile_picture.url }}" class="rounded-circle me-3" width="40" height="40">
+                            {% else %}
+                                <div class="bg-success rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                    <i class="fas fa-user text-white"></i>
+                                </div>
+                            {% endif %}
+                            <div>
+                                <h6 class="mb-0">{{ conversation.farmer.user.first_name }} {{ conversation.farmer.user.last_name }}</h6>
+                                <small class="text-muted">{{ conversation.farmer.farm_location }}</small>
+                            </div>
+                        {% else %}
+                            {% if conversation.customer.user.profile_picture %}
+                                <img src="{{ conversation.customer.user.profile_picture.url }}" class="rounded-circle me-3" width="40" height="40">
+                            {% else %}
+                                <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                    <i class="fas fa-user text-white"></i>
+                                </div>
+                            {% endif %}
+                            <div>
+                                <h6 class="mb-0">{{ conversation.customer.user.first_name }} {{ conversation.customer.user.last_name }}</h6>
+                                <small class="text-muted">{{ conversation.customer.user.location }}</small>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <a href="{% url 'messaging:conversation_list' %}" class="btn btn-outline-secondary btn-sm">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </a>
+                </div>
+                
+                <div class="card-body" style="height: 400px; overflow-y: auto;" id="messages-container">
+                    {% for message in messages %}
+                        <div class="mb-3 {% if message.sender == user %}text-end{% endif %}">
+                            <div class="d-inline-block p-3 rounded {% if message.sender == user %}bg-primary text-white{% else %}bg-light{% endif %}" style="max-width: 70%;">
+                                <div>{{ message.content }}</div>
+                                <small class="{% if message.sender == user %}text-light{% else %}text-muted{% endif %} d-block mt-1">
+                                    {{ message.created_at|date:"M d, H:i" }}
+                                </small>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="text-center text-muted py-5">
+                            <i class="fas fa-comments fa-3x mb-3"></i>
+                            <p>No messages yet. Start the conversation!</p>
+                        </div>
+                    {% endfor %}
+                </div>
+                
+                <div class="card-footer">
+                    <form id="message-form" class="d-flex">
+                        {% csrf_token %}
+                        <input type="hidden" name="conversation_id" value="{{ conversation.id }}">
+                        <input type="text" name="content" class="form-control me-2" placeholder="Type your message..." required>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const messageForm = document.getElementById('message-form');
+    const messagesContainer = document.getElementById('messages-container');
+    
+    // Scroll to bottom of messages
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    
+    messageForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        const content = formData.get('content');
+        
+        if (!content.trim()) return;
+        
+        fetch('{% url "messaging:send_message" %}', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Add message to UI
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'mb-3 text-end';
+                messageDiv.innerHTML = `
+                    <div class="d-inline-block p-3 rounded bg-primary text-white" style="max-width: 70%;">
+                        <div>${data.content}</div>
+                        <small class="text-light d-block mt-1">${data.timestamp}</small>
+                    </div>
+                `;
+                messagesContainer.appendChild(messageDiv);
+                
+                // Clear form and scroll to bottom
+                this.reset();
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            } else {
+                alert(data.error || 'Error sending message');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error sending message');
+        });
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,223 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Farmer Profile{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-10 mx-auto">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-seedling"></i> Farmer Profile
+                        {% if profile.is_verified %}
+                            <span class="badge bg-warning ms-2">
+                                <i class="fas fa-check-circle"></i> Verified
+                            </span>
+                        {% endif %}
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 text-center">
+                            {% if user.profile_picture %}
+                                <img src="{{ user.profile_picture.url }}" alt="Profile Picture" class="img-fluid rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                            {% else %}
+                                <div class="bg-success rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 150px; height: 150px;">
+                                    <i class="fas fa-user fa-4x text-white"></i>
+                                </div>
+                            {% endif %}
+                            <h5>{{ user.get_full_name|default:user.username }}</h5>
+                            <p class="text-muted">{{ profile.farm_name|default:"Farmer" }}</p>
+                            
+                            <!-- Rating Display -->
+                            <div class="mb-3">
+                                <div class="text-warning">
+                                    {% for i in "12345" %}
+                                        {% if forloop.counter <= profile.average_rating %}
+                                            <i class="fas fa-star"></i>
+                                        {% else %}
+                                            <i class="far fa-star"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                                <small class="text-muted">
+                                    {{ profile.average_rating|floatformat:1 }} ({{ profile.ratings.count }} reviews)
+                                </small>
+                            </div>
+                            
+                            <!-- Stats -->
+                            <div class="row text-center">
+                                <div class="col-4">
+                                    <h6 class="text-primary mb-0">{{ profile.total_followers }}</h6>
+                                    <small class="text-muted">Followers</small>
+                                </div>
+                                <div class="col-4">
+                                    <h6 class="text-success mb-0">{{ profile.products.count }}</h6>
+                                    <small class="text-muted">Products</small>
+                                </div>
+                                <div class="col-4">
+                                    <h6 class="text-info mb-0">{{ profile.total_sales }}</h6>
+                                    <small class="text-muted">Sales</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-8">
+                            <h6 class="text-success">Farm Information</h6>
+                            <hr>
+                            <div class="row mb-2">
+                                <div class="col-sm-4"><strong>Farm Name:</strong></div>
+                                <div class="col-sm-8">{{ profile.farm_name|default:"Not provided" }}</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-sm-4"><strong>Farm Location:</strong></div>
+                                <div class="col-sm-8">{{ profile.farm_location|default:"Not provided" }}</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-sm-4"><strong>Experience:</strong></div>
+                                <div class="col-sm-8">{{ profile.years_of_experience }} years</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-sm-4"><strong>Farming Methods:</strong></div>
+                                <div class="col-sm-8">{{ profile.farming_methods|default:"Not specified" }}</div>
+                            </div>
+                            {% if profile.farm_description %}
+                            <div class="row mb-2">
+                                <div class="col-sm-4"><strong>Description:</strong></div>
+                                <div class="col-sm-8">{{ profile.farm_description }}</div>
+                            </div>
+                            {% endif %}
+                            
+                            <h6 class="text-success mt-4">Contact Information</h6>
+                            <hr>
+                            <div class="row mb-2">
+                                <div class="col-sm-4"><strong>Email:</strong></div>
+                                <div class="col-sm-8">{{ user.email }}</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-sm-4"><strong>Phone:</strong></div>
+                                <div class="col-sm-8">{{ user.phone|default:"Not provided" }}</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-sm-4"><strong>Member Since:</strong></div>
+                                <div class="col-sm-8">{{ user.created_at|date:"F d, Y" }}</div>
+                            </div>
+                            {% if profile.verification_date %}
+                            <div class="row mb-2">
+                                <div class="col-sm-4"><strong>Verified On:</strong></div>
+                                <div class="col-sm-8">{{ profile.verification_date|date:"F d, Y" }}</div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <!-- Action Buttons -->
+                    <div class="row">
+                        <div class="col-12">
+                            <a href="{% url 'accounts:edit_profile' %}" class="btn btn-success me-2">
+                                <i class="fas fa-edit"></i> Edit Profile
+                            </a>
+                            <a href="{% url 'products:farmer_dashboard' %}" class="btn btn-primary me-2">
+                                <i class="fas fa-tachometer-alt"></i> Dashboard
+                            </a>
+                            <a href="{% url 'products:product_add' %}" class="btn btn-info me-2">
+                                <i class="fas fa-plus"></i> Add Product
+                            </a>
+                            <a href="{% url 'products:analytics_dashboard' %}" class="btn btn-warning me-2">
+                                <i class="fas fa-chart-bar"></i> Analytics
+                            </a>
+                            <a href="{% url 'messaging:conversation_list' %}" class="btn btn-outline-success">
+                                <i class="fas fa-comments"></i> Messages
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recent Products -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-leaf"></i> Recent Products
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if profile.products.exists %}
+                        <div class="row">
+                            {% for product in profile.products.all|slice:":4" %}
+                                <div class="col-md-3 mb-3">
+                                    <div class="card h-100">
+                                        {% if product.image %}
+                                            <img src="{{ product.image.url }}" class="card-img-top" style="height: 150px; object-fit: cover;">
+                                        {% else %}
+                                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 150px;">
+                                                <i class="fas fa-image fa-2x text-muted"></i>
+                                            </div>
+                                        {% endif %}
+                                        <div class="card-body p-2">
+                                            <h6 class="card-title mb-1">{{ product.name }}</h6>
+                                            <p class="card-text text-success mb-1">${{ product.price }}</p>
+                                            <small class="text-muted">{{ product.stock }} in stock</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        {% if profile.products.count > 4 %}
+                            <div class="text-center">
+                                <a href="{% url 'products:farmer_dashboard' %}" class="btn btn-outline-success">
+                                    View All Products ({{ profile.products.count }})
+                                </a>
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <p class="text-muted text-center">No products added yet.</p>
+                        <div class="text-center">
+                            <a href="{% url 'products:product_add' %}" class="btn btn-success">
+                                <i class="fas fa-plus"></i> Add Your First Product
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Recent Reviews -->
+            {% if profile.ratings.exists %}
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-star"></i> Recent Reviews
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% for rating in profile.ratings.all|slice:":3" %}
+                        <div class="border-bottom pb-2 mb-2">
+                            <div class="d-flex justify-content-between">
+                                <strong>{{ rating.customer.user.username }}</strong>
+                                <div class="text-warning">
+                                    {% for i in "12345" %}
+                                        {% if forloop.counter <= rating.rating %}
+                                            <i class="fas fa-star"></i>
+                                        {% else %}
+                                            <i class="far fa-star"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% if rating.review %}
+                                <p class="mb-1">{{ rating.review }}</p>
+                            {% endif %}
+                            <small class="text-muted">{{ rating.created_at|date:"M d, Y" }}</small>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

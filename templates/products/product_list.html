@@ -1,0 +1,398 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Products - FarmConnect{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize search functionality
+    initializeProductSearch();
+    initializeFilters();
+    initializeCartActions();
+});
+
+function initializeProductSearch() {
+    const searchInput = document.getElementById('product-search');
+    const searchResults = document.getElementById('search-results');
+    
+    if (searchInput) {
+        let searchTimeout;
+        
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            const query = this.value.trim();
+            
+            if (query.length < 2) {
+                searchResults.classList.remove('show');
+                return;
+            }
+            
+            searchTimeout = setTimeout(() => {
+                performProductSearch(query);
+            }, 300);
+        });
+        
+        // Close search results when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+                searchResults.classList.remove('show');
+            }
+        });
+    }
+}
+
+function performProductSearch(query) {
+    fetch(`/products/search/?q=${encodeURIComponent(query)}`)
+        .then(response => response.json())
+        .then(data => {
+            displaySearchResults(data.results);
+        })
+        .catch(error => {
+            console.error('Search error:', error);
+        });
+}
+
+function displaySearchResults(results) {
+    const searchResults = document.getElementById('search-results');
+    
+    if (results.length === 0) {
+        searchResults.innerHTML = `
+            <div class="p-3 text-muted text-center">
+                <i class="fas fa-search fa-2x mb-2"></i>
+                <p>No products found</p>
+            </div>
+        `;
+    } else {
+        const html = results.map(product => `
+            <a href="/products/${product.id}/" class="search-result-item d-flex align-items-center p-3 border-bottom text-decoration-none">
+                <img src="${product.image || '/static/images/placeholder-product.jpg'}" 
+                     alt="${product.name}" class="rounded me-3" width="60" height="60" 
+                     style="object-fit: cover;">
+                <div class="flex-grow-1">
+                    <h6 class="mb-1 text-dark">${product.name}</h6>
+                    <p class="mb-0 text-muted small">${product.farmer_name}</p>
+                    <p class="mb-0 fw-bold text-success">$${product.price}</p>
+                </div>
+                <div class="text-end">
+                    <span class="badge bg-success rounded-pill">${product.category}</span>
+                </div>
+            </a>
+        `).join('');
+        
+        searchResults.innerHTML = html;
+    }
+    
+    searchResults.classList.add('show');
+}
+
+function initializeFilters() {
+    // Handle filter changes
+    const filterForm = document.getElementById('filter-form');
+    if (filterForm) {
+        filterForm.addEventListener('change', function() {
+            // Auto-submit form on filter change
+            this.submit();
+        });
+    }
+}
+
+function initializeCartActions() {
+    // Add to cart functionality
+    document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            const productId = this.dataset.productId;
+            addToCart(productId, this);
+        });
+    });
+}
+
+function addToCart(productId, button) {
+    const originalText = button.innerHTML;
+    button.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Adding...';
+    button.disabled = true;
+    
+    fetch(`/orders/add-to-cart/${productId}/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({ quantity: 1 })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification('Product added to cart!', 'success');
+            updateCartCount(data.cart_count || 1);
+        } else {
+            showNotification(data.error || 'Failed to add to cart', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('An error occurred. Please try again.', 'error');
+    })
+    .finally(() => {
+        button.innerHTML = originalText;
+        button.disabled = false;
+    });
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+    notification.style.cssText = 'top: 80px; right: 20px; z-index: 9999; min-width: 300px;';
+    notification.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.remove();
+    }, 5000);
+}
+
+function updateCartCount(count) {
+    const cartBadge = document.querySelector('.cart-count');
+    if (cartBadge) {
+        cartBadge.textContent = count;
+        cartBadge.style.display = count > 0 ? 'inline-block' : 'none';
+    }
+}
+</script>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="bg-success bg-opacity-10 py-5 mb-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="display-5 fw-bold mb-3">Fresh Farm Products</h1>
+                <p class="lead text-muted">Discover quality produce directly from local farmers</p>
+            </div>
+            <div class="col-lg-4">
+                <div class="search-container position-relative">
+                    <input type="text" 
+                           id="product-search" 
+                           class="form-control form-control-lg rounded-pill ps-4" 
+                           placeholder="Search for fresh produce..."
+                           value="{{ request.GET.search }}">
+                    <i class="fas fa-search position-absolute" style="right: 20px; top: 50%; transform: translateY(-50%); color: #6c757d;"></i>
+                    <div id="search-results" class="search-results"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="container">
+    <div class="row">
+        <!-- Filters Sidebar -->
+        <div class="col-lg-3 mb-4">
+            <div class="card border-0 shadow-sm sticky-top" style="top: 20px;">
+                <div class="card-header bg-white border-bottom">
+                    <h5 class="mb-0">
+                        <i class="fas fa-filter me-2 text-success"></i>Filters
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form id="filter-form" method="get">
+                        <!-- Search -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Search</label>
+                            <input type="text" 
+                                   name="search" 
+                                   class="form-control" 
+                                   value="{{ request.GET.search }}" 
+                                   placeholder="Search products...">
+                        </div>
+                        
+                        <!-- Categories -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Categories</label>
+                            <div class="space-y-2">
+                                {% for category in categories %}
+                                    <div class="form-check">
+                                        <input class="form-check-input" 
+                                               type="checkbox" 
+                                               name="category" 
+                                               value="{{ category.id }}"
+                                               id="cat-{{ category.id }}"
+                                               {% if request.GET.category == category.id|stringformat:"s" %}checked{% endif %}>
+                                        <label class="form-check-label" for="cat-{{ category.id }}">
+                                            {{ category.name }}
+                                        </label>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <!-- Price Range -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Price Range</label>
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <input type="number" 
+                                           name="min_price" 
+                                           class="form-control" 
+                                           placeholder="Min"
+                                           value="{{ request.GET.min_price }}">
+                                </div>
+                                <div class="col-6">
+                                    <input type="number" 
+                                           name="max_price" 
+                                           class="form-control" 
+                                           placeholder="Max"
+                                           value="{{ request.GET.max_price }}">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Sort -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Sort By</label>
+                            <select name="sort" class="form-select">
+                                <option value="">Sort by</option>
+                                <option value="price_low" {% if request.GET.sort == "price_low" %}selected{% endif %}>
+                                    Price: Low to High
+                                </option>
+                                <option value="price_high" {% if request.GET.sort == "price_high" %}selected{% endif %}>
+                                    Price: High to Low
+                                </option>
+                                <option value="newest" {% if request.GET.sort == "newest" %}selected{% endif %}>
+                                    Newest First
+                                </option>
+                                <option value="rating" {% if request.GET.sort == "rating" %}selected{% endif %}>
+                                    Highest Rated
+                                </option>
+                            </select>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="fas fa-search me-2"></i>Apply Filters
+                        </button>
+                        <a href="{% url 'products:product_list' %}" class="btn btn-outline-secondary w-100 mt-2">
+                            <i class="fas fa-times me-2"></i>Clear Filters
+                        </a>
+                        <button type="submit" class="btn btn-primary w-100">Apply Filters</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-9">
+            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center mb-4">
+                <h2 class="mb-2 mb-sm-0">Products</h2>
+                <span class="text-muted">{{ products|length }} products found</span>
+            </div>
+            
+            <div class="row">
+                {% for product in products %}
+                    <div class="col-12 col-sm-6 col-lg-4 mb-4">
+                        <div class="card h-100 card-hover">
+                            {% if product.image %}
+                                <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}" style="height: 200px; object-fit: cover;">
+                            {% else %}
+                                <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                    <i class="fas fa-image fa-3x text-muted"></i>
+                                </div>
+                            {% endif %}
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title">{{ product.name }}</h5>
+                                <p class="card-text text-muted small">{{ product.description|truncatewords:15 }}</p>
+                                <div class="mt-auto">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span class="h5 text-success mb-0">${{ product.price }}</span>
+                                        <small class="text-muted">{{ product.unit }}</small>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <small class="text-muted">by {{ product.farmer.user.username }}</small>
+                                        <span class="badge bg-{{ product.is_in_stock|yesno:'success,danger' }}">
+                                            {{ product.is_in_stock|yesno:'In Stock,Out of Stock' }}
+                                        </span>
+                                    </div>
+                                    <a href="{% url 'products:product_detail' product.id %}" class="btn btn-primary w-100">View Details</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="col-12">
+                        <div class="text-center py-5">
+                            <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                            <h4>No products found</h4>
+                            <p class="text-muted">Try adjusting your filters or search terms.</p>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            
+            <!-- Pagination -->
+            {% if is_paginated %}
+                <nav aria-label="Products pagination">
+                    <ul class="pagination justify-content-center flex-wrap">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.previous_page_number }}">Previous</a>
+                            </li>
+                        {% endif %}
+                        
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if page_obj.number == num %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ num }}</span>
+                                </li>
+                            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ num }}">{{ num }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.next_page_number }}">Next</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                <div class="text-center py-5">
+                    <i class="fas fa-search fa-4x text-muted mb-3"></i>
+                    <h4>No products found</h4>
+                    <p class="text-muted">Try adjusting your search criteria or browse all products.</p>
+                    <a href="{% url 'products:product_list' %}" class="btn btn-success">View All Products</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+.product-card {
+    transition: transform 0.2s;
+}
+.product-card:hover {
+    transform: translateY(-5px);
+}
+</style>
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}Choose Registration Type - Farm Market{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="text-center mb-5">
+                <h2 class="display-5 fw-bold">Join Farm Market</h2>
+                <p class="lead">Choose how you'd like to participate in our community</p>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100 card-hover border-0 shadow">
+                        <div class="card-body text-center p-5">
+                            <div class="mb-4">
+                                <i class="fas fa-shopping-basket fa-4x text-primary"></i>
+                            </div>
+                            <h4 class="card-title mb-3">I'm a Customer</h4>
+                            <p class="card-text mb-4">I want to buy fresh produce directly from local farmers</p>
+                            <ul class="list-unstyled text-start mb-4">
+                                <li><i class="fas fa-check text-success me-2"></i> Browse fresh products</li>
+                                <li><i class="fas fa-check text-success me-2"></i> Chat with farmers</li>
+                                <li><i class="fas fa-check text-success me-2"></i> Follow favorite farmers</li>
+                                <li><i class="fas fa-check text-success me-2"></i> Easy ordering & delivery</li>
+                            </ul>
+                            <a href="{% url 'accounts:customer_register' %}" class="btn btn-primary btn-lg w-100">
+                                Register as Customer
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100 card-hover border-0 shadow">
+                        <div class="card-body text-center p-5">
+                            <div class="mb-4">
+                                <i class="fas fa-tractor fa-4x text-success"></i>
+                            </div>
+                            <h4 class="card-title mb-3">I'm a Farmer</h4>
+                            <p class="card-text mb-4">I want to sell my produce directly to customers</p>
+                            <ul class="list-unstyled text-start mb-4">
+                                <li><i class="fas fa-check text-success me-2"></i> Manage your products</li>
+                                <li><i class="fas fa-check text-success me-2"></i> Track sales & analytics</li>
+                                <li><i class="fas fa-check text-success me-2"></i> Connect with customers</li>
+                                <li><i class="fas fa-check text-success me-2"></i> Build your following</li>
+                            </ul>
+                            <a href="{% url 'accounts:farmer_register' %}" class="btn btn-success btn-lg w-100">
+                                Register as Farmer
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-4">
+                <p>Already have an account? <a href="{% url 'accounts:login' %}" class="text-decoration-none">Login here</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

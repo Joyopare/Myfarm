@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block title %}Messages - Farm Market{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <h2><i class="fas fa-comments"></i> Messages</h2>
+    
+    {% if conversations %}
+        <div class="row">
+            {% for conversation in conversations %}
+                <div class="col-md-6 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="me-3">
+                                    {% if user.user_type == 'customer' %}
+                                        {% if conversation.farmer.user.profile_picture %}
+                                            <img src="{{ conversation.farmer.user.profile_picture.url }}" class="rounded-circle" width="50" height="50">
+                                        {% else %}
+                                            <div class="bg-success rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                                <i class="fas fa-user text-white"></i>
+                                            </div>
+                                        {% endif %}
+                                    {% else %}
+                                        {% if conversation.customer.user.profile_picture %}
+                                            <img src="{{ conversation.customer.user.profile_picture.url }}" class="rounded-circle" width="50" height="50">
+                                        {% else %}
+                                            <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                                <i class="fas fa-user text-white"></i>
+                                            </div>
+                                        {% endif %}
+                                    {% endif %}
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1">
+                                        {% if user.user_type == 'customer' %}
+                                            {{ conversation.farmer.user.first_name }} {{ conversation.farmer.user.last_name }}
+                                        {% else %}
+                                            {{ conversation.customer.user.first_name }} {{ conversation.customer.user.last_name }}
+                                        {% endif %}
+                                    </h6>
+                                    <small class="text-muted">
+                                        {% if user.user_type == 'customer' %}
+                                            Farmer from {{ conversation.farmer.farm_location }}
+                                        {% else %}
+                                            Customer from {{ conversation.customer.user.location }}
+                                        {% endif %}
+                                    </small>
+                                    <br>
+                                    <small class="text-muted">Last updated: {{ conversation.updated_at|date:"M d, Y" }}</small>
+                                </div>
+                                <div>
+                                    <a href="{% url 'messaging:conversation_detail' conversation.pk %}" class="btn btn-outline-primary btn-sm">
+                                        <i class="fas fa-comment"></i> Chat
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-comments fa-4x text-muted mb-3"></i>
+            <h4>No conversations yet</h4>
+            <p class="text-muted">
+                {% if user.user_type == 'customer' %}
+                    Start a conversation with a farmer by visiting their product page.
+                {% else %}
+                    Customers will be able to message you about your products.
+                {% endif %}
+            </p>
+            {% if user.user_type == 'customer' %}
+                <a href="{% url 'products:product_list' %}" class="btn btn-success">Browse Products</a>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

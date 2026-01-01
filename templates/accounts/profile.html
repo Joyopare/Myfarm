@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Profile - Farm Market{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    <h4><i class="fas fa-user"></i> My Profile</h4>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        {% if user.profile_picture %}
+                            <img src="{{ user.profile_picture.url }}" class="rounded-circle mb-3" width="120" height="120">
+                        {% else %}
+                            <div class="bg-success rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 120px; height: 120px;">
+                                <i class="fas fa-user fa-3x text-white"></i>
+                            </div>
+                        {% endif %}
+                        <h5>{{ user.first_name }} {{ user.last_name }}</h5>
+                        <p class="text-muted">{{ user.get_user_type_display }}</p>
+                    </div>
+                    
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">First Name</label>
+                                    <input type="text" name="first_name" class="form-control" value="{{ user.first_name }}" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Last Name</label>
+                                    <input type="text" name="last_name" class="form-control" value="{{ user.last_name }}" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Email</label>
+                                    <input type="email" name="email" class="form-control" value="{{ user.email }}" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Phone</label>
+                                    <input type="text" name="phone" class="form-control" value="{{ user.phone }}">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Age</label>
+                                    <input type="number" name="age" class="form-control" value="{{ user.age }}" min="18" max="120">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Location</label>
+                                    <input type="text" name="location" class="form-control" value="{{ user.location }}">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Profile Picture</label>
+                            <input type="file" name="profile_picture" class="form-control" accept="image/*">
+                        </div>
+                        
+                        {% if user.user_type == 'farmer' %}
+                            <hr>
+                            <h6>Farmer Information</h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Farm Name</label>
+                                        <input type="text" name="farm_name" class="form-control" value="{{ user.farmer_profile.farm_name }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Farm Location</label>
+                                        <input type="text" name="farm_location" class="form-control" value="{{ user.farmer_profile.farm_location }}">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Farm Description</label>
+                                <textarea name="farm_description" class="form-control" rows="3">{{ user.farmer_profile.farm_description }}</textarea>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Years of Experience</label>
+                                        <input type="number" name="years_of_experience" class="form-control" value="{{ user.farmer_profile.years_of_experience }}" min="0">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Farming Methods</label>
+                                        <input type="text" name="farming_methods" class="form-control" value="{{ user.farmer_profile.farming_methods }}" placeholder="e.g., Organic, Sustainable">
+                                    </div>
+                                </div>
+                            </div>
+                        {% elif user.user_type == 'customer' %}
+                            <hr>
+                            <h6>Customer Preferences</h6>
+                            <div class="mb-3">
+                                <label class="form-label">Dietary Preferences</label>
+                                <input type="text" name="dietary_preferences" class="form-control" value="{{ user.customer_profile.dietary_preferences }}" placeholder="e.g., Vegetarian, Vegan, Organic">
+                            </div>
+                        {% endif %}
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save"></i> Update Profile
+                            </button>
+                            <a href="{% url 'accounts:home' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left"></i> Back to Home
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Statistics Card for Farmers -->
+            {% if user.user_type == 'farmer' %}
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h6><i class="fas fa-chart-bar"></i> Your Statistics</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row text-center">
+                            <div class="col-md-3">
+                                <div class="border-end">
+                                    <h4 class="text-success">{{ user.farmer_profile.products.count }}</h4>
+                                    <small class="text-muted">Products</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="border-end">
+                                    <h4 class="text-info">{{ user.farmer_profile.total_followers }}</h4>
+                                    <small class="text-muted">Followers</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="border-end">
+                                    <h4 class="text-warning">{{ user.farmer_profile.average_rating|floatformat:1 }}</h4>
+                                    <small class="text-muted">Rating</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <h4 class="text-primary">${{ user.farmer_profile.total_sales }}</h4>
+                                <small class="text-muted">Total Sales</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

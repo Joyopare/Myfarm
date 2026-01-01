@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block title %}Order History - Farm Market{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <h2><i class="fas fa-history"></i> Order History</h2>
+    
+    {% if orders %}
+        <div class="row">
+            {% for order in orders %}
+                <div class="col-12 mb-3">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>Order #{{ order.order_number }}</strong>
+                                <small class="text-muted ms-2">{{ order.created_at|date:"F d, Y" }}</small>
+                            </div>
+                            <div>
+                                <span class="badge bg-{% if order.status == 'delivered' %}success{% elif order.status == 'shipped' %}info{% elif order.status == 'confirmed' %}warning{% else %}secondary{% endif %}">
+                                    {{ order.get_status_display }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <h6>Items:</h6>
+                                    {% for item in order.items.all %}
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <div>
+                                                <strong>{{ item.product.name }}</strong>
+                                                <small class="text-muted">by {{ item.farmer.user.username }}</small>
+                                                <br>
+                                                <small>Qty: {{ item.quantity }} × ${{ item.price }}</small>
+                                            </div>
+                                            <div class="text-end">
+                                                <strong>${{ item.total_price }}</strong>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="text-end">
+                                        <h5 class="text-success">Total: ${{ order.total_amount }}</h5>
+                                        <p class="mb-1"><strong>Delivery:</strong> {{ order.get_delivery_option_display }}</p>
+                                        <a href="{% url 'orders:order_detail' order.order_number %}" class="btn btn-outline-primary btn-sm">
+                                            <i class="fas fa-eye"></i> View Details
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if is_paginated %}
+            <nav aria-label="Order history pagination">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1">First</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                        </li>
+                    {% endif %}
+                    
+                    <li class="page-item active">
+                        <span class="page-link">{{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                    </li>
+                    
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% endif %}
+    {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-shopping-bag fa-4x text-muted mb-3"></i>
+            <h4>No orders yet</h4>
+            <p class="text-muted">Start shopping to see your order history here.</p>
+            <a href="{% url 'products:product_list' %}" class="btn btn-success">
+                <i class="fas fa-seedling"></i> Browse Products
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

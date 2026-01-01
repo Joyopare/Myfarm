@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Farmer Registration - Farm Market{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card shadow">
+                <div class="card-body p-5">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-tractor fa-3x text-success mb-3"></i>
+                        <h2>Farmer Registration</h2>
+                        <p class="text-muted">Join as a farmer to sell your produce</p>
+                    </div>
+                    
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        <button type="submit" class="btn btn-success btn-lg w-100 mt-3">
+                            Create Farmer Account
+                        </button>
+                    </form>
+                    
+                    <div class="text-center mt-4">
+                        <p>Want to buy produce instead? <a href="{% url 'accounts:customer_register' %}">Register as Customer</a></p>
+                        <p>Already have an account? <a href="{% url 'accounts:login' %}">Login here</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

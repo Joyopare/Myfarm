@@ -1,0 +1,437 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}FarmConnect - Fresh From Farm to Table{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Simple Clean Design */
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #ffffff;
+    color: #1a1a1a;
+}
+
+/* Hero Section */
+.hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e8f5e8 100%);
+    position: relative;
+}
+
+.hero-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    text-align: center;
+}
+
+.hero-title {
+    font-size: clamp(2.5rem, 6vw, 4rem);
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    color: #1a5f3f;
+    line-height: 1.1;
+}
+
+.hero-subtitle {
+    font-size: clamp(1.125rem, 2.5vw, 1.5rem);
+    color: #6b7280;
+    margin-bottom: 3rem;
+    line-height: 1.6;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* Features Section */
+.features {
+    padding: 6rem 0;
+    background: #ffffff;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 4rem;
+}
+
+.section-title {
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: #1a5f3f;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 3rem;
+}
+
+.feature-card {
+    text-align: center;
+    padding: 2rem;
+    transition: transform 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-10px);
+}
+
+.feature-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #1a5f3f, #4caf50);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 2rem;
+}
+
+.feature-icon i {
+    font-size: 2rem;
+    color: white;
+}
+
+.feature-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #1a1a1a;
+}
+
+.feature-description {
+    color: #6b7280;
+    line-height: 1.6;
+    font-size: 1.0625rem;
+}
+
+/* CTA Section */
+.cta {
+    padding: 6rem 0;
+    background: linear-gradient(135deg, #1a5f3f 0%, #4caf50 100%);
+    color: white;
+    text-align: center;
+}
+
+.cta-title {
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+}
+
+.cta-description {
+    font-size: 1.25rem;
+    margin-bottom: 2.5rem;
+    opacity: 0.9;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Button Styles */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50px;
+    padding: 1rem 2.5rem;
+    font-weight: 600;
+    font-size: 1rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #1a5f3f, #4caf50);
+    color: white;
+    box-shadow: 0 4px 15px rgba(26, 95, 63, 0.3);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(26, 95, 63, 0.4);
+}
+
+.btn-outline {
+    background: transparent;
+    border: 2px solid #1a5f3f;
+    color: #1a5f3f;
+}
+
+.btn-outline:hover {
+    background: #1a5f3f;
+    color: white;
+}
+
+.btn-light {
+    background: transparent;
+    border: 2px solid white;
+    color: white;
+}
+
+.btn-light:hover {
+    background: white;
+    color: #1a5f3f;
+}
+
+.btn-lg {
+    padding: 1.25rem 3rem;
+    font-size: 1.125rem;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in-up {
+    animation: fadeInUp 0.8s ease forwards;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .hero-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .features-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    
+    .btn {
+        width: 100%;
+        max-width: 300px;
+    }
+}
+
+.fw-bold {
+  font-weight: 300 !important;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4">Fresh from Farm to Table</h1>
+                <p class="lead mb-4">Connect directly with local farmers and get the freshest produce delivered to your door. Support local agriculture while enjoying quality food.</p>
+                {% if not user.is_authenticated %}
+                    <div class="d-flex gap-3">
+                        <a href="{% url 'accounts:register_choice' %}" class="btn btn-light btn-lg">Get Started</a>
+                        <a href="{% url 'accounts:login' %}" class="btn btn-outline-light btn-lg">Login</a>
+                    </div>
+                {% else %}
+                    <a href="{% url 'products:product_list' %}" class="btn btn-light btn-lg">Browse Products</a>
+                {% endif %}
+            </div>
+            <div class="col-lg-6 text-center">
+                <div class="hero-image-placeholder bg-light rounded shadow p-3 p-md-5">
+                    <i class="fas fa-seedling fa-4x fa-md-5x text-success mb-3"></i>
+                    <h5 class="text-success fw-bold">FarmConnect</h5>
+                    <h4 class="text-dark h5 h-md-4">Fresh Farm Products</h4>
+
+                    <div class="row g-2 g-md-3">
+                        <div class="col-4">
+                            <div class="stat-card">
+                                <h3 class="fw-bold mb-1 text-success h5 h-md-3">1000+</h3>
+                                <p class="mb-0 small text-dark">Active Farmers</p>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="stat-card">
+                                <h3 class="fw-bold mb-1 text-success h5 h-md-3">5000+</h3>
+                                <p class="mb-0 small text-dark">Monthly Orders</p>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="stat-card">
+                                <h3 class="fw-bold mb-1 text-success h5 h-md-3">80%</h3>
+                                <p class="mb-0 small text-dark">Repeat Customers</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container my-5">
+    <div class="row">
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100 card-hover border-0 shadow">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3">
+                        <i class="fas fa-users fa-3x text-success"></i>
+                    </div>
+                    <h5 class="card-title">For Customers</h5>
+                    <p class="card-text">Browse fresh produce from local farmers, chat directly with growers, and get farm-fresh food delivered.</p>
+                    {% if not user.is_authenticated %}
+                        <a href="{% url 'accounts:customer_register' %}" class="btn btn-success">Join as Customer</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100 card-hover border-0 shadow">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3">
+                        <i class="fas fa-seedling fa-3x text-success"></i>
+                    </div>
+                    <h5 class="card-title">For Farmers</h5>
+                    <p class="card-text">Sell directly to customers, manage your products, track sales, and build relationships with your community.</p>
+                    {% if not user.is_authenticated %}
+                        <a href="{% url 'accounts:farmer_register' %}" class="btn btn-success">Join as Farmer</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100 card-hover border-0 shadow">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3">
+                        <i class="fas fa-handshake fa-3x text-success"></i>
+                    </div>
+                    <h5 class="card-title">Direct Connection</h5>
+                    <p class="card-text">No middlemen. Connect farmers and customers directly for better prices and fresher produce.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if user.is_authenticated %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="text-center mb-4">Welcome back, {{ user.first_name }}!</h2>
+            {% if user.user_type == 'customer' %}
+                <div class="text-center">
+                    <p class="lead">Ready to shop for fresh produce?</p>
+                    <a href="{% url 'products:product_list' %}" class="btn btn-success btn-lg">Browse Products</a>
+                </div>
+            {% else %}
+                <div class="text-center">
+                    <p class="lead">Manage your farm and connect with customers.</p>
+                    <a href="{% url 'products:farmer_dashboard' %}" class="btn btn-success btn-lg">Go to Dashboard</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="bg-light py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6">
+                <h3>Why Choose Farm Market?</h3>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Fresh, locally grown produce</li>
+                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Direct farmer-to-customer connection</li>
+                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Support local agriculture</li>
+                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Transparent pricing</li>
+                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Real-time chat with farmers</li>
+                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Quick delivery or convenient farm pickup options</li>
+                </ul>
+            </div>
+
+            <div class="col-lg-6 text-center">
+                <div class="hero-image-placeholder bg-light rounded shadow p-5">
+                    <h4 class="text-dark">Partners</h4>
+                    <hr>
+
+                    <div class="row g-3">
+                        <div class="col-4">
+                            <div class="stat-card">
+                                <h5 class="fw-bold mb-1 text-success">dev_seeks</h5>
+                                <p class="mb-0 small text-dark">jkkkkkhhh</p>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="stat-card">
+                                <h5 class="fw-bold mb-1 text-success">FDA</h5>
+                                <p class="mb-0 small text-dark">kkkkgghhh</p>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="stat-card">
+                                <h5 class="fw-bold mb-1 text-success">MoA</h5>
+                                <p class="mb-0 small text-dark">yyyyyyhuyyy</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Simple fade-in animation on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+    
+    document.querySelectorAll('.animate-fade-in-up').forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(30px)';
+        el.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+        observer.observe(el);
+    });
+});
+</script>
+{% endblock %}
+                
+         
+                
+                                                                                        

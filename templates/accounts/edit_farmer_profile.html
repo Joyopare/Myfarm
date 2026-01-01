@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Edit Farmer Profile{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-10 mx-auto">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-edit"></i> Edit Farmer Profile
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <!-- Personal Information -->
+                        <h5 class="text-success mb-3">Personal Information</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="first_name" class="form-label">First Name</label>
+                                    <input type="text" class="form-control" id="first_name" name="first_name" 
+                                           value="{{ user.first_name }}" placeholder="Enter first name">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="last_name" class="form-label">Last Name</label>
+                                    <input type="text" class="form-control" id="last_name" name="last_name" 
+                                           value="{{ user.last_name }}" placeholder="Enter last name">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Email Address</label>
+                                    <input type="email" class="form-control" id="email" name="email" 
+                                           value="{{ user.email }}" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="phone" class="form-label">Phone Number</label>
+                                    <input type="tel" class="form-control" id="phone" name="phone" 
+                                           value="{{ user.phone }}" placeholder="+1234567890">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="age" class="form-label">Age</label>
+                                    <input type="number" class="form-control" id="age" name="age" 
+                                           value="{{ user.age }}" min="18" max="120">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="location" class="form-label">Personal Location</label>
+                                    <input type="text" class="form-control" id="location" name="location" 
+                                           value="{{ user.location }}" placeholder="City, State">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Profile Picture -->
+                        <div class="mb-3">
+                            <label for="profile_picture" class="form-label">Profile Picture</label>
+                            {% if user.profile_picture %}
+                                <div class="mb-2">
+                                    <img src="{{ user.profile_picture.url }}" alt="Current Profile Picture" 
+                                         class="img-thumbnail" style="width: 100px; height: 100px; object-fit: cover;">
+                                    <small class="text-muted d-block">Current profile picture</small>
+                                </div>
+                            {% endif %}
+                            <input type="file" class="form-control" id="profile_picture" name="profile_picture" 
+                                   accept="image/*">
+                            <small class="form-text text-muted">Upload a new profile picture (optional)</small>
+                        </div>
+                        
+                        <!-- Farm Information -->
+                        <h5 class="text-success mb-3 mt-4">Farm Information</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="farm_name" class="form-label">Farm Name</label>
+                                    <input type="text" class="form-control" id="farm_name" name="farm_name" 
+                                           value="{{ profile.farm_name }}" placeholder="e.g., Green Valley Farm">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="farm_location" class="form-label">Farm Location *</label>
+                                    <input type="text" class="form-control" id="farm_location" name="farm_location" 
+                                           value="{{ profile.farm_location }}" required placeholder="Farm address or area">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="years_of_experience" class="form-label">Years of Experience</label>
+                                    <input type="number" class="form-control" id="years_of_experience" name="years_of_experience" 
+                                           value="{{ profile.years_of_experience }}" min="0" max="80">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="farming_methods" class="form-label">Farming Methods</label>
+                                    <input type="text" class="form-control" id="farming_methods" name="farming_methods" 
+                                           value="{{ profile.farming_methods }}" placeholder="e.g., Organic, Sustainable, Traditional">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="farm_description" class="form-label">Farm Description</label>
+                            <textarea class="form-control" id="farm_description" name="farm_description" 
+                                      rows="4" placeholder="Tell customers about your farm, what you grow, your farming philosophy...">{{ profile.farm_description }}</textarea>
+                            <small class="form-text text-muted">This will be shown to customers on your profile</small>
+                        </div>
+                        
+                        <!-- Verification Documents -->
+                        <h5 class="text-success mb-3 mt-4">Verification</h5>
+                        <div class="mb-3">
+                            <label for="verification_documents" class="form-label">Verification Documents</label>
+                            {% if profile.verification_documents %}
+                                <div class="mb-2">
+                                    <a href="{{ profile.verification_documents.url }}" target="_blank" class="btn btn-sm btn-outline-info">
+                                        <i class="fas fa-file"></i> View Current Document
+                                    </a>
+                                    <small class="text-muted d-block">Current verification document uploaded</small>
+                                </div>
+                            {% endif %}
+                            <input type="file" class="form-control" id="verification_documents" name="verification_documents" 
+                                   accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                            <small class="form-text text-muted">
+                                Upload farming license, certification, or other verification documents (PDF, DOC, or images)
+                            </small>
+                            {% if profile.is_verified %}
+                                <div class="alert alert-success mt-2">
+                                    <i class="fas fa-check-circle"></i> Your farm is verified!
+                                    {% if profile.verification_date %}
+                                        <small class="d-block">Verified on {{ profile.verification_date|date:"F d, Y" }}</small>
+                                    {% endif %}
+                                </div>
+                            {% else %}
+                                <div class="alert alert-info mt-2">
+                                    <i class="fas fa-info-circle"></i> Upload verification documents to get your farm verified by our team.
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{% url 'accounts:profile' %}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save"></i> Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
