@@ -9,15 +9,8 @@
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "farmmarket/wsgi.py"
+      "dest": "farmmarket/wsgi.py",
+      "config":{ "maxLambdaSize": "15mb","runtime": "python3.9"}
     }
-  ],
-  "env": {
-    "DJANGO_SETTINGS_MODULE": "farmmarket.settings"
-  },
-  "functions": {
-    "farmmarket/wsgi.py": {
-      "runtime": "python3.9"
-    }
-  }
+  ]
 }
