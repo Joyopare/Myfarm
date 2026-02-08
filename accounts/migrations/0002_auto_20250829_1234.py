@@ -21,11 +21,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='farmerprofile',
-            name='is_verified',
-            field=models.BooleanField(default=False),
-        ),
-        migrations.AddField(
-            model_name='farmerprofile',
             name='verification_date',
             field=models.DateTimeField(blank=True, null=True),
         ),

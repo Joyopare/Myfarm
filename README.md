@@ -50,39 +50,28 @@ A comprehensive Django-based marketplace connecting farmers directly with custom
    pip install -r requirements.txt
    ```
 
-4. **Configure environment variables**
-   ```bash
-   # Create .env file
-   SECRET_KEY=your-secret-key-here
-   DEBUG=True
-   STRIPE_PUBLISHABLE_KEY=pk_test_your_key
-   STRIPE_SECRET_KEY=sk_test_your_key
-   EMAIL_HOST_USER=your-email@gmail.com
-   EMAIL_HOST_PASSWORD=your-app-password
-   ```
-
-5. **Run migrations**
+4. **Run migrations**
    ```bash
    python manage.py makemigrations
    python manage.py migrate
    ```
 
-6. **Create superuser**
+5. **Create superuser**
    ```bash
    python manage.py createsuperuser
    ```
 
-7. **Load sample data (optional)**
+6. **Load sample data (optional)**
    ```bash
    python create_sample_data.py
    ```
 
-8. **Start Redis server**
+7. **Start Redis server**
    ```bash
    redis-server
    ```
 
-9. **Run development server**
+8. **Run development server**
    ```bash
    python manage.py runserver
    ```
@@ -158,35 +147,6 @@ Myfarm/
 
 ## 🔧 Configuration
 
-### Environment Variables
-Create a `.env` file in the project root:
-
-```env
-SECRET_KEY=your-django-secret-key
-DEBUG=True
-STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_key
-STRIPE_SECRET_KEY=sk_test_your_stripe_key
-EMAIL_HOST_USER=your-email@gmail.com
-EMAIL_HOST_PASSWORD=your-app-password
-REDIS_URL=redis://localhost:6379
-```
-
-### Database Configuration
-The project uses SQLite by default. For production, configure PostgreSQL:
-
-```python
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'farmmarket_db',
-        'USER': 'your_username',
-        'PASSWORD': 'your_password',
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
-}
-```
-
 ## 🧪 Testing
 
 Run the test suite:
@@ -243,25 +203,6 @@ Access analytics at `/products/analytics/` (farmers only).
    python manage.py migrate --run-syncdb
    ```
 
-4. **SSL Configuration**
-   - Configure HTTPS
-   - Update SECURE_SSL_REDIRECT settings
-
-5. **Media Files**
-   - Configure cloud storage (AWS S3, etc.)
-   - Update MEDIA_URL and MEDIA_ROOT
-
-### Docker Deployment
-
-```dockerfile
-FROM python:3.9
-WORKDIR /app
-COPY requirements.txt .
-RUN pip install -r requirements.txt
-COPY . .
-EXPOSE 8000
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
-```
 
 ## 🤝 Contributing
 
@@ -271,58 +212,14 @@ CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## 📝 API Documentation
 
-### REST Endpoints
-
-- `GET /products/search/` - Product search API
-- `POST /orders/add-to-cart/{product_id}/` - Add item to cart
-- `POST /orders/update-cart/{item_id}/` - Update cart item
-- `POST /messaging/send-message/` - Send message
-- `POST /accounts/follow-farmer/{farmer_id}/` - Follow/unfollow farmer
-
-### WebSocket Endpoints
-
-- `ws/notifications/{user_id}/` - Real-time notifications
-- `ws/chat/{conversation_id}/` - Real-time messaging
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-1. **Redis Connection Error**
-   ```bash
-   # Start Redis server
-   redis-server
-   ```
-
-2. **Migration Issues**
-   ```bash
-   python manage.py makemigrations --empty appname
-   python manage.py migrate --fake-initial
-   ```
-
-3. **Static Files Not Loading**
-   ```bash
-   python manage.py collectstatic --clear
-   ```
-
-4. **Permission Denied Errors**
-   ```bash
-   # Check file permissions
-   chmod 755 manage.py
-   ```
 
 ## 📞 Support
 
 For support and questions:
 - Create an issue on GitHub
-- Email: support@farmmarket.com
-- Documentation: [Wiki](link-to-wiki)
+- Email: oparejoy05@gmail.com
 
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 🙏 Acknowledgments
 

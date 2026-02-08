@@ -13,6 +13,12 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 import os 
 from decouple import config
+import psycopg2
+from dotenv import load_dotenv
+
+# Load environment variables from .env
+load_dotenv()
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -26,8 +32,14 @@ SECRET_KEY = config('SECRET_KEY', default='django-insecure-$&ml@(4q))*xdx!7b!-=m
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=True, cast=bool)
 
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=lambda v: [s.strip() for s in v.split(',')])
-
+# Configure allowed hosts for different environments
+if DEBUG:
+    ALLOWED_HOSTS = ['*']
+else:
+    # Production hosts - add your domain names here
+    ALLOWED_HOSTS = [
+        config('ALLOWED_HOST'),
+    ]
 
 # Application definition
 
@@ -45,6 +57,7 @@ INSTALLED_APPS = [
     'products',
     'orders',
     'messaging',
+    'storages',
 
 ]
 
@@ -94,14 +107,16 @@ DATABASES = {
 """
 
 
+
+
 DATABASES = {
     'default': {
     'ENGINE': 'django.db.backends.postgresql',
-    'HOST': 'db.liushbbcbklmcyqytxij.supabase.co',
-    'NAME': 'postgres',
-    'USER': 'postgres',
-    'PASSWORD':'L3mind&d266',
-    'PORT': 5432,
+    'NAME': config('dbname'),
+    'USER': config('user'),
+    'PASSWORD': config('password'),
+    'HOST': config('host'),
+    'PORT': config('port'),
     }
 }
 
@@ -143,8 +158,24 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+
+# STORAGE SUPABASE - Only configure if environment variables are set
+if config('ENDPOINT_URL', default=''):
+    AWS_ACCESS_KEY_ID = config('ACCESS_KEY_ID')
+    AWS_SECRET_ACCESS_KEY = config('SECRET_ACCESS_KEY')
+    AWS_STORAGE_BUCKET_NAME = config('STORAGE_BUCKET_NAME')
+    AWS_S3_ENDPOINT_URL = config('ENDPOINT_URL')
+    AWS_S3_REGION_NAME = config('REGION_NAME')
+    AWS_DEFAULT_ACL = config('DEFAULT_ACL')
+    
+    # Tell Django to use Supabase for media file storage
+    DEFAULT_FILE_STORAGE = 'storages.backends.s3.S3Storage'
+    # Optional: configure static files storage as well
+    # STATICFILES_STORAGE = 'storages.backends.s3.S3Storage'
+else:
+    # Use local file storage when Supabase is not configured
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = BASE_DIR / 'media'
 
 # Crispy Forms
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"

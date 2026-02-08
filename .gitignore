@@ -2,3 +2,7 @@
 /.env.example
 /tests.py
 /workflow.txt
+/nginx.conf
+/docker-compose.yml
+/Dockerfile
+/deploy.sh

@@ -1,0 +1,23 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "farmmarket/wsgi.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "farmmarket/wsgi.py"
+    }
+  ],
+  "env": {
+    "DJANGO_SETTINGS_MODULE": "farmmarket.settings"
+  },
+  "functions": {
+    "farmmarket/wsgi.py": {
+      "runtime": "python3.9"
+    }
+  }
+}
