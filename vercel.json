@@ -9,7 +9,7 @@
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "farmmarket/wsgi.py",
+      "dest": "/farmmarket/wsgi.py",
       "config":{ "maxLambdaSize": "15mb","runtime": "python3.9"}
     }
   ]

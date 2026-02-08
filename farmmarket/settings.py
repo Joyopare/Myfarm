@@ -33,13 +33,8 @@ SECRET_KEY = config('SECRET_KEY', default='django-insecure-$&ml@(4q))*xdx!7b!-=m
 DEBUG = config('DEBUG', default=True, cast=bool)
 
 # Configure allowed hosts for different environments
-if DEBUG:
-    ALLOWED_HOSTS = ['*']
-else:
-    # Production hosts - add your domain names here
-    ALLOWED_HOSTS = [
-        config('ALLOWED_HOST'),
-    ]
+    # Production hosts - add your domain names here     
+ALLOWED_HOSTS = ['.vercel.app','localhost,127.0.0.1','db.liushbbcbklmcyqytxij.supabase.co','dpg-d6334npr0fns73dgt3jg-a.oregon-postgres.render.com','https://liushbbcbklmcyqytxij.storage.supabase.co/storage/v1/s3']
 
 # Application definition
 
