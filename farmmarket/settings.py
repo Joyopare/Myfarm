@@ -34,7 +34,7 @@ DEBUG = config('DEBUG', default=True, cast=bool)
 
 # Configure allowed hosts for different environments
     # Production hosts - add your domain names here     
-ALLOWED_HOSTS = ['.vercel.app','localhost,127.0.0.1','db.liushbbcbklmcyqytxij.supabase.co','dpg-d6334npr0fns73dgt3jg-a.oregon-postgres.render.com','https://liushbbcbklmcyqytxij.storage.supabase.co/storage/v1/s3']
+ALLOWED_HOSTS = ['.vercel.app', 'localhost', '127.0.0.1']
 
 # Application definition
 
