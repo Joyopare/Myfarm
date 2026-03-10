@@ -145,24 +145,6 @@ Myfarm/
 - Monitor system activity
 - Generate reports
 
-## 🔧 Configuration
-
-## 🧪 Testing
-
-Run the test suite:
-
-```bash
-python manage.py test
-```
-
-Run specific test modules:
-
-```bash
-python manage.py test accounts
-python manage.py test products
-python manage.py test orders
-```
-
 ## 📊 Analytics & Monitoring
 
 The application includes comprehensive analytics:
@@ -190,7 +172,7 @@ Access analytics at `/products/analytics/` (farmers only).
 1. **Environment Setup**
    ```bash
    DEBUG=False
-   ALLOWED_HOSTS=['yourdomain.com']
+   ALLOWED_HOSTS=[]
    ```
 
 2. **Static Files**
@@ -213,22 +195,22 @@ Access analytics at `/products/analytics/` (farmers only).
 5. Open a Pull Request
 
 
-
-## 📞 Support
-
-For support and questions:
-- Create an issue on GitHub
-- Email: oparejoy05@gmail.com
-
-
 ## 🙏 Acknowledgments
-
 - Django Framework
 - Bootstrap 5
 - Chart.js for analytics
 - Stripe for payments
 - Redis for real-time features
 
----
+## 📞 Support
+
+For support and questions:
+- Create an issue on GitHub
+- Email: oparejoy05@gmail.com
+  ✅ Twitter
+  ✅ Instagram        ## @devseeks
+  ✅ Facebook
+  ✅ Tiktok
+  
 
 **Built with ❤️ for connecting farmers and customers directly.**
