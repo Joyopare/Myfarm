@@ -207,10 +207,11 @@ Access analytics at `/products/analytics/` (farmers only).
 For support and questions:
 - Create an issue on GitHub
 - Email: oparejoy05@gmail.com
-  ✅ Twitter
-  ✅ Instagram        ## @devseeks
-  ✅ Facebook
-  ✅ Tiktok
+-✅ Twitter
+-✅ Instagram        
+-✅ Facebook
+-✅ Tiktok
+-## @devseeks
   
 
 **Built with ❤️ for connecting farmers and customers directly.**
